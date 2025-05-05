@@ -1,6 +1,8 @@
 /* eslint-disable no-unused-vars */
 import React, { useEffect, useState } from "react";
 import Banner from "../components/Banner";
+import Card from "../components/Card";
+import Jobs from "./Jobs";
 
 const Home = () => {
   const [selectedCategory,  setSelectedCategory] = useState(null);
@@ -31,6 +33,7 @@ const Home = () => {
 
   const filteredData = (job, selected, query) => {
     let filteredJobs = job;
+    console.log("this is filtered jobs", filteredJobs)
 
     if (query) {
       filteredJobs = filteredItems;
@@ -43,14 +46,22 @@ const Home = () => {
         salaryType.toLowerCase() === selected.toLowerCase() ||
         employeeType.toLowerCase() === selected.toLowerCase()
       });
-      console.log(filteredJobs)
+      console.log(filteredJobs);
+      
+      return filteredData.map((data, i) => <Card key={i} data={data}/>)
     }
 
   }
 
+  const result = filteredData(jobs, selectedCategory, query);
+
   return (
     <div>
       <Banner query={query} handleInputChange={handleInputChange} />
+
+      <div>
+      <Jobs result={result} />  
+      </div>
     </div>
   );
 };
