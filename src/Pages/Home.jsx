@@ -3,6 +3,7 @@ import React, { useEffect, useState } from "react";
 import Banner from "../components/Banner";
 import Card from "../components/Card";
 import Jobs from "./Jobs";
+import { data } from "autoprefixer";
 
 const Home = () => {
   const [selectedCategory,  setSelectedCategory] = useState(null);
@@ -10,13 +11,10 @@ const Home = () => {
   const [query, setQuery] = useState("");
 
   useEffect(() => {
-    fetch("jobs.json").then(res => res.json()).then(data => {
-      setJobs(data)
-      
-    })
-  })
-
-  // filter jobs by title
+    fetch("jobs.json").then(res => res.json()).then(data => {  
+    setJobs(data);});
+  }, []); 
+  
   const filteredItems = jobs.filter((job) => job.jobTitle.toLowerCase().indexOf(query.toLowerCase()) !== -1);
 
   const handleInputChange = (event) => {
@@ -31,36 +29,45 @@ const Home = () => {
     setSelectedCategory(event.target.value);
   }
 
-  const filteredData = (job, selected, query) => {
-    let filteredJobs = job;
-    console.log("this is filtered jobs", filteredJobs)
-
+  const filteredData = (jobs, selected, query) => {
+    let filteredJobs = jobs;
+  
+    // Apply search query filter
     if (query) {
-      filteredJobs = filteredItems;
+      filteredJobs = filteredJobs.filter((job) =>
+        job.jobTitle.toLowerCase().includes(query.toLowerCase())
+      );
     }
-
+  
+    // Apply selected category filter
     if (selected) {
-      filteredJobs = filteredJobs.filter(({jobLocation, maxPrice, experienceLevel, salaryType, employeeType, postingDate})=>{
-        jobLocation.toLowerCase() === selected.toLowerCase() || 
-        parseInt(maxPrice) === parseInt(selected) ||
-        salaryType.toLowerCase() === selected.toLowerCase() ||
-        employeeType.toLowerCase() === selected.toLowerCase()
-      });
-      console.log(filteredJobs);
-      
-      return filteredData.map((data, i) => <Card key={i} data={data}/>)
+      filteredJobs = filteredJobs.filter(
+        ({ jobLocation, maxPrice, experienceLevel, salaryType, employeeType, postingDate }) =>
+          jobLocation.toLowerCase() === selected.toLowerCase() ||
+          parseInt(maxPrice) === parseInt(selected) ||
+          salaryType.toLowerCase() === selected.toLowerCase() ||
+          employeeType.toLowerCase() === selected.toLowerCase()
+      );
     }
-
-  }
-
+    // console.log("hey this is result", result)
+    // Always return the mapped JSX array
+    return filteredJobs.map((data, i) => <Card key={i} data={data} />);
+  };
+  
+  
   const result = filteredData(jobs, selectedCategory, query);
 
   return (
     <div>
       <Banner query={query} handleInputChange={handleInputChange} />
 
+         
+
       <div>
-      <Jobs result={result} />  
+        <div>Left</div>
+        <div>{result}</div>
+        <div>Right</div>
+  
       </div>
     </div>
   );
